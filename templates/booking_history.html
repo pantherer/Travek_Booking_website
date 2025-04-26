@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking History</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .booking-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-history-table th,
+        .booking-history-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .booking-history-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .booking-history-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .booking-history-table tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .booking-history-table th,
+        .booking-history-table td {
+            white-space: nowrap;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .booking-history-table thead {
+                display: none; /* Hide headers on smaller screens */
+            }
+
+            .booking-history-table tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+            }
+
+            .booking-history-table td {
+                display: block;
+                text-align: right;
+                border-bottom: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            .booking-history-table td:before {
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                text-align: left;
+                font-weight: bold;
+            }
+        }
+        .back-button {
+            font-size: 24px;
+            color: #000;
+            text-decoration: none;
+            display: block;
+            margin: 20px;
+        }
+        #booking-history-section{
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="header">
+        <div class="header container">
+            <div class="nav-bar">
+                <div class="brand">
+                    <a href="/dashboard">
+                        <h1><span>H</span>orizon T<span>r</span>avels</h1>
+                    </a>
+                </div>
+                <div class="nav-list">
+                    <div class="hamburger">
+                        <div class="bar"></div>
+                    </div>
+                    <ul>
+                        <li><a href="/book">Book Now</a></li>
+                        <li><a href="/booking_history">Booking History</a></li>
+                        <li><a href="/profile">-User-</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="booking-history-section">
+        <a href="/dashboard" class="back-button"><i class="fa fa-arrow-left"></i></a>
+        <div class="container">
+            <!-- <h3 class="section-title">Booking <span>History</span> of <span>{{ current_user.username }}</span></h3> -->
+            {% if bookings %}
+            <table class="booking-history-table">
+                <thead>
+                    <tr>
+                        <th>Travel Type</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Departure Date</th>
+                        <th>Return Date</th>
+                        <th>Adults</th>
+                        <th>Children</th>
+                        <th>Class Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="8" style="text-align: left; padding: 10px;">
+                            <h3><strong>BOOKING HISTORY OF GHAN</strong></h3>
+                        </td>
+                    </tr>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td data-label="Travel Type">{{ booking.travel_type }}</td>
+                        <td data-label="From">{{ booking.from_location }}</td>
+                        <td data-label="To">{{ booking.to_location }}</td>
+                        <td data-label="Departure Date">{{ booking.departure_date }}</td>
+                        <td data-label="Return Date">{{ booking.return_date }}</td>
+                        <td data-label="Adults">{{ booking.adults }}</td>
+                        <td data-label="Children">{{ booking.children }}</td>
+                        <td data-label="Class Type">{{ booking.class_type }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No bookings found.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <script src="/static/js/home.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,434 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+                   initial-scale=1.0"
+    />
+    <title>All Users - Horizon Travels Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <style>
+      .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .users-table th,
+      .users-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .users-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      .back-to-dashboard {
+        display: block;
+        margin-top: 20px;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .back-to-dashboard:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logosec">
+        <div class="logo">Horizon Travels</div>
+        <img
+          src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182541/Untitled-design-(30).png"
+          class="icn menuicn"
+          id="menuicn"
+          alt="menu-icon"
+        />
+      </div>
+      <div class="searchbar">
+        <input type="text" placeholder="Search" />
+        <div class="searchbtn">
+          <img
+            src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180758/Untitled-design-(28).png"
+            class="icn srchicn"
+            alt="search-icon"
+          />
+        </div>
+      </div>
+      <div class="message">
+        <div class="circle"></div>
+        <img
+          src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183322/8.png"
+          class="icn"
+          alt=""
+        />
+        <div class="dp">
+          <img
+            src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180014/profile-removebg-preview.png"
+            class="dpicn"
+            alt="dp"
+          />
+        </div>
+      </div>
+    </header>
+    <div class="main-container">
+      <div class="navcontainer">
+        <nav class="nav">
+          <div class="nav-upper-options">
+            <div class="nav-option option1">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182148/Untitled-design-(29).png"
+                class="nav-img"
+                alt="dashboard"
+              />
+              <a
+                href="{{ url_for('admin_dashboard') }}"
+                style="color: white; text-decoration: none;"
+                ><h3>Dashboard</h3></a
+              >
+            </div>
+            <div class="nav-option option2">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183322/9.png"
+                class="nav-img"
+                alt="bookings"
+              />
+              <a
+                href="{{ url_for('view_all_bookings') }}"
+                style="color: white; text-decoration: none;"
+                ><h3>Bookings</h3></a
+              >
+            </div>
+            <div class="nav-option option3">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183320/5.png"
+                class="nav-img"
+                alt="users"
+              />
+              <h3 style="font-weight: bold;">Users</h3>
+            </div>
+            <div class="nav-option option4">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/6.png"
+                class="nav-img"
+                alt="packages"
+              />
+              <a href="#" style="color: white; text-decoration: none;"
+                ><h3>Packages</h3></a
+              >
+            </div>
+            <div class="nav-option option5">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183323/10.png"
+                class="nav-img"
+                alt="profile"
+              />
+              <a href="{{ url_for('profile') }}" style="color: white; text-decoration: none;"
+                ><h3>Profile</h3></a
+              >
+            </div>
+            <div class="nav-option option6">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183320/4.png"
+                class="nav-img"
+                alt="settings"
+              />
+              <a href="#" style="color: white; text-decoration: none;"
+                ><h3>Settings</h3></a
+              >
+            </div>
+            <div class="nav-option logout">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/7.png"
+                class="nav-img"
+                alt="logout"
+              />
+              <a href="{{ url_for('logout') }}" style="color: white; text-decoration: none;"
+                ><h3>Logout</h3></a
+              >
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="report-container">
+          <div class="report-header">
+            <h1 class="recent-Articles">All Users</h1>
+          </div>
+          <div class="report-body">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.role }}</td>
+                  <td>{{ user.email }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="4">No users found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <a href="{{ url_for('admin_dashboard') }}" class="back-to-dashboard"
+              >Back to Dashboard</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/js/admin.js"></script>
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+                   initial-scale=1.0"
+    />
+    <title>All Users - Horizon Travels Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <style>
+      /* Basic table styling -  you can customize this in your admin.css */
+      .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .users-table th,
+      .users-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      .users-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      .back-to-dashboard {
+        display: block;
+        margin-top: 20px;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .back-to-dashboard:hover {
+        text-decoration: underline;
+      }
+      .edit-button {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+      }
+
+      .delete-button {
+        background-color: #f44336; /* Red */
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logosec">
+        <div class="logo">Horizon Travels</div>
+        <img
+          src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182541/Untitled-design-(30).png"
+          class="icn menuicn"
+          id="menuicn"
+          alt="menu-icon"
+        />
+      </div>
+      <div class="searchbar">
+        <input type="text" placeholder="Search" />
+        <div class="searchbtn">
+          <img
+            src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180758/Untitled-design-(28).png"
+            class="icn srchicn"
+            alt="search-icon"
+          />
+        </div>
+      </div>
+      <div class="message">
+        <div class="circle"></div>
+        <img
+          src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183322/8.png"
+          class="icn"
+          alt=""
+        />
+        <div class="dp">
+          <img
+            src="https://media.geeksforgeeks.org/wp-content/uploads/20221210180014/profile-removebg-preview.png"
+            class="dpicn"
+            alt="dp"
+          />
+        </div>
+      </div>
+    </header>
+    <div class="main-container">
+      <div class="navcontainer">
+        <nav class="nav">
+          <div class="nav-upper-options">
+            <div class="nav-option option1">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210182148/Untitled-design-(29).png"
+                class="nav-img"
+                alt="dashboard"
+              />
+              <a
+                href="{{ url_for('admin_dashboard') }}"
+                style="color: white; text-decoration: none;"
+                ><h3>Dashboard</h3></a
+              >
+            </div>
+            <div class="nav-option option2">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183322/9.png"
+                class="nav-img"
+                alt="bookings"
+              />
+              <a
+                href="{{ url_for('view_all_bookings') }}"
+                style="color: black; text-decoration: none;"
+                ><h3>Bookings</h3></a
+              >
+            </div>
+            <div class="nav-option option3">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183320/5.png"
+                class="nav-img"
+                alt="users"
+              />
+              <h3 style="color: #5500cb; font-weight: bold;">Users</h3>
+            </div>
+            <div class="nav-option option4">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/6.png"
+                class="nav-img"
+                alt="packages"
+              />
+              <a href="#" style="color: black; text-decoration: none;"
+                ><h3>Packages</h3></a
+              >
+            </div>
+            <div class="nav-option option5">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183323/10.png"
+                class="nav-img"
+                alt="profile"
+              />
+              <a href="{{ url_for('profile') }}" style="color: black; text-decoration: none;"
+                ><h3>Profile</h3></a
+              >
+            </div>
+            <div class="nav-option option6">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183320/4.png"
+                class="nav-img"
+                alt="settings"
+              />
+              <a href="#" style="color: black; text-decoration: none;"
+                ><h3>Settings</h3></a
+              >
+            </div>
+            <div class="nav-option logout">
+              <img
+                src="https://media.geeksforgeeks.org/wp-content/uploads/20221210183321/7.png"
+                class="nav-img"
+                alt="logout"
+              />
+              <a href="{{ url_for('logout') }}" style="color: black; text-decoration: none;"
+                ><h3>Logout</h3></a
+              >
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="report-container">
+          <div class="report-header">
+            <h1 class="recent-Articles">All Users</h1>
+          </div>
+          <div class="report-body">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.role }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <button class="edit-button">Edit</button>
+                  </td>
+                  <td>
+                    <button class="delete-button">Delete</button>
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="6">No users found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <a href="{{ url_for('admin_dashboard') }}" class="back-to-dashboard"
+              >Back to Dashboard</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/js/admin.js"></script>
+  </body>
+</html>
