@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>{{ 'Edit Booking' if booking else 'New Booking' }}</title>
+
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="/static/css/booking_form.css" />
+
+    <script>
+        function updateClassOptions(selectedClass = '') {
+            const flightRadio = document.getElementById('flight');
+            const trainRadio = document.getElementById('train');
+            const cabRadio = document.getElementById('cab');
+            const classSelect = document.getElementById('classSelect');
+            classSelect.innerHTML = '';
+
+            if (flightRadio.checked) {
+                classSelect.innerHTML += `<option ${selectedClass === 'Economy' ? 'selected' : ''}>Economy</option>
+                                          <option ${selectedClass === 'Business' ? 'selected' : ''}>Business</option>
+                                          <option ${selectedClass === 'First Class' ? 'selected' : ''}>First Class</option>`;
+            }
+            else if (trainRadio.checked) {
+                classSelect.innerHTML += `<option ${selectedClass === 'Sleeper' ? 'selected' : ''}>Sleeper</option>
+                                          <option ${selectedClass === 'AC' ? 'selected' : ''}>AC</option>`;
+            }
+            else if (cabRadio.checked) {
+                classSelect.innerHTML += `<option ${selectedClass === 'Sedan' ? 'selected' : ''}>Sedan</option>
+                                          <option ${selectedClass === 'SUV' ? 'selected' : ''}>SUV</option>`;
+            }
+            else {
+                classSelect.innerHTML = `<option>Please select a travel type</option>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            {% if booking %}
+            if ("{{ booking.travel_type }}" === "flight") document.getElementById('flight').checked = true;
+            else if ("{{ booking.travel_type }}" === "train") document.getElementById('train').checked = true;
+            else if ("{{ booking.travel_type }}" === "cab") document.getElementById('cab').checked = true;
+            updateClassOptions("{{ booking.class_type }}");
+            {% else %}
+            updateClassOptions();
+            {% endif %}
+        });
+    </script>
+</head>
+
+<body>
+    <div id="booking" class="section">
+        <div class="section-center">
+            <div class="container">
+                <button type="button" class="back-btn" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="row">
+                    <div class="booking-form">
+                        <form action="{{ url_for('edit_booking', booking_id=booking['id']) if booking else url_for('book') }}" method="post">
+                            <div class="form-group">
+                                <div class="form-checkbox">
+                                    <label for="flight">
+                                        <input type="radio" id="flight" name="travel-type" value="flight" onclick="updateClassOptions()">
+                                        <span></span>Flight
+                                    </label>
+                                    <label for="train">
+                                        <input type="radio" id="train" name="travel-type" value="train" onclick="updateClassOptions()">
+                                        <span></span>Train
+                                    </label>
+                                    <label for="cab">
+                                        <input type="radio" id="cab" name="travel-type" value="cab" onclick="updateClassOptions()">
+                                        <span></span>Cab
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">From</span>
+                                        <input class="form-control" type="text" placeholder="City or station" name="from" value="{{ booking.from_location if booking else '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">To</span>
+                                        <input class="form-control" type="text" placeholder="City or station" name="to" value="{{ booking.to_location if booking else '' }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">Departure Date</span>
+                                        <input class="form-control" type="date" required name="departure" value="{{ booking.departure_date|safe if booking else '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">Return Date (Optional)</span>
+                                        <input class="form-control" type="date" name="return" value="{{ booking.return_date|safe if booking else '' }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <span class="form-label">Adults (18+)</span>
+                                        <select class="form-control" name="adults">
+                                            {% for num in range(1, 4) %}
+                                                <option value="{{ num }}" {% if booking and booking.adults == num %}selected{% endif %}>{{ num }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <span class="form-label">Children (0-17)</span>
+                                        <select class="form-control" name="children">
+                                            {% for num in range(0, 3) %}
+                                                <option value="{{ num }}" {% if booking and booking.children == num %}selected{% endif %}>{{ num }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <span class="form-label">Class/Type</span>
+                                        <select class="form-control" id="classSelect" name="class_type">
+                                            <!-- Will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-btn">
+                                        <button class="submit-btn">{{ 'Update' if booking else 'Book' }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

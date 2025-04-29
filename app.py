@@ -4,7 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import mysql.connector
 
 app = Flask(__name__)
-
+# mysql password = NewPassword123!
 # MySQL Configurations
 DB_CONFIG = {
     "host": "localhost",
@@ -271,6 +271,162 @@ def view_all_users():
         cur.close()
         conn.close()
     return render_template('view_all_users.html', users=all_users)
+
+@app.route("/edit_booking/<int:booking_id>", methods=['GET', 'POST'])
+@login_required
+def edit_booking(booking_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        # Admin submitted the edited form
+        travel_type = request.form.get('travel-type')
+        from_location = request.form.get('from')
+        to_location = request.form.get('to')
+        departure_date = request.form.get('departure')
+        return_date = request.form.get('return')
+        adults = request.form.get('adults')
+        children = request.form.get('children')
+        class_type = request.form.get('class_type')
+
+        try:
+            cur.execute("""
+                UPDATE bookings 
+                SET travel_type = %s,
+                    from_location = %s,
+                    to_location = %s,
+                    departure_date = %s,
+                    return_date = %s,
+                    adults = %s,
+                    children = %s,
+                    class_type = %s
+                WHERE id = %s
+            """, (travel_type, from_location, to_location, departure_date, return_date, adults, children, class_type, booking_id))
+
+            conn.commit()
+            flash("Booking updated successfully!", "success")
+            return redirect(url_for('dashboard'))  # Or redirect wherever you want after editing
+        except mysql.connector.Error as err:
+            flash(f"Error updating booking: {err}", "danger")
+        finally:
+            cur.close()
+            conn.close()
+
+    else:
+        cur.execute("SELECT * FROM bookings WHERE id = %s", (booking_id,))
+        booking = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if not booking:
+            flash("Booking not found.", "danger")
+            return redirect(url_for('dashboard'))  # or anywhere appropriate
+        
+        return render_template("edit_bookings.html", booking=booking)
+    
+@app.route("/edit_user/<int:user_id>", methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        role = request.form.get('role')
+
+        try:
+            cur.execute("""
+                UPDATE users 
+                SET username = %s, email = %s, role = %s
+                WHERE id = %s
+            """, (username, email, role, user_id))
+            conn.commit()
+            flash("User updated successfully!", "success")
+            return redirect(url_for('view_all_users'))
+        except mysql.connector.Error as err:
+            flash(f"Error updating user: {err}", "danger")
+        finally:
+            cur.close()
+            conn.close()
+    
+    else:
+        cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if not user:
+            flash("User not found.", "danger")
+            return redirect(url_for('view_all_users'))
+
+        return render_template("edit_users.html", user=user)
+
+@app.route("/delete_user/<int:user_id>", methods=["POST"])
+@login_required
+def delete_user(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        # Check if the user exists before attempting deletion
+        cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+        user = cur.fetchone()
+
+        if not user:
+            flash("User not found.", "danger")
+            return redirect(url_for('view_all_users'))
+
+        print(f"Attempting to delete user with ID: {user_id}")
+        
+        # First, delete the user's bookings
+        cur.execute("DELETE FROM bookings WHERE user_id = %s", (user_id,))
+        conn.commit()
+
+        # Now, delete the user
+        cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        conn.commit()
+
+        if cur.rowcount > 0:  # Check if any rows were deleted
+            print(f"User with ID: {user_id} deleted successfully.")
+            flash("User deleted successfully!", "success")
+        else:
+            print(f"No user found with ID: {user_id}.")
+            flash("User deletion failed, no such user.", "danger")
+        
+    except mysql.connector.Error as err:
+        flash(f"Error deleting user: {err}", "danger")
+        print(f"Error deleting user: {err}")
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for('view_all_users'))
+
+@app.route("/delete_booking/<int:booking_id>", methods=['POST'])
+@login_required
+def delete_booking(booking_id):
+    # Only allow admin users to delete bookings
+    if current_user.role != 'admin':
+        flash('You do not have permission to delete this booking.', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        # Delete the booking from the database
+        cur.execute("DELETE FROM bookings WHERE id = %s", (booking_id,))
+        conn.commit()
+        flash('Booking deleted successfully!', 'success')
+    except mysql.connector.Error as err:
+        flash(f'Error deleting booking: {err}', 'danger')
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for('view_all_bookings'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
